@@ -1,6 +1,7 @@
 # -*- coding: utf-8 -*-
 #! /usr/bin/python
 import MySQLdb
+#import mysqlclient
 import csv
 import datetime
 
