@@ -16,6 +16,16 @@ y
 switch_list = [] ##пустой список коммутаторов, который в дальнейшем будет заполняться и обрабатываться
 command_list = alc6224_command_text.split('\n') ##список команд, составленный путем разделения текста на строки
 
+switch_dict = {}
+with open('gw_switch.cfg', encoding="utf8") as f: ##Создание словаря, ключ - модель, значение - список айпишников
+	for line in f:
+		if 'alias' in line:
+			switch_model = line.strip()[8:]
+		elif 'address' in line:
+			switch_ip = line.split()[-1]
+			switch_dict.setdefault(switch_model, []).append(switch_ip)
+
+
 
 def to_bytes(line): ##добавляет в строку знаки переноса и возврата каретки и преобразует в байтовое значение для чтения telnetlib
     return f"{line}\r\n".encode("utf-8")
