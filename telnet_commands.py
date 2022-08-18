@@ -30,7 +30,8 @@ with open('gw_switch.cfg', encoding="utf8") as f: ##Создание слова�
 def to_bytes(line): ##добавляет в строку знаки переноса и возврата каретки и преобразует в байтовое значение для чтения telnetlib
     return f"{line}\r\n".encode("utf-8")
 
-def telnet_commands():
+def telnet_commands(model):
+    switch_list = switch_dict.get(model)
     for switch in switch_list:
        # time.sleep(0.5)
         try:
@@ -48,13 +49,13 @@ def telnet_commands():
             print("connection time out caught")
 
 
-with open('switches.txt', 'r') as f: ##считывает ip из файла и заполняет ими список switch_list
-    lines = f.readlines()
-    for line in lines:
-        line = line.strip()
-        switch_list.append(line)
+#with open('switches.txt', 'r') as f: ##считывает ip из файла и заполняет ими список switch_list
+#    lines = f.readlines()
+#    for line in lines:
+#        line = line.strip()
+#        switch_list.append(line)
 
-#telnet_commands()
+telnet_commands('OS-LS-6224')
 
 
 
