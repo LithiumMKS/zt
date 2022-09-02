@@ -8,13 +8,21 @@ start_time = datetime.now() ##обозначает время начала вы�
 url = 'http://ufa.groupw.ru/plugins/switch/config/5/switch.cfg'
 r = requests.get(url, allow_redirects=True)
 open('gw_switch.cfg', 'wb').write(r.content) ##запись в файл списка оборудования из гв
-alc6224_command_text = ''' 
+switch_list = [] ##пустой список коммутаторов, который в дальнейшем будет заполняться и обрабатываться
+
+
+alc6224_cfg = ''' 
 copy run start
 y
 '''
+des3526_cfg = '''
+save
+'''
+des3200_26_cfg = 'save'
 
-switch_list = [] ##пустой список коммутаторов, который в дальнейшем будет заполняться и обрабатываться
-command_list = alc6224_command_text.split('\n') ##список команд, составленный путем разделения текста на строки
+
+
+#command_list = alc6224_cfg.split('\n') ##список команд, составленный путем разделения текста на строки
 
 switch_dict = {}
 with open('gw_switch.cfg', encoding="utf8") as f: ##Создание словаря, ключ - модель, значение - список айпишников
@@ -30,21 +38,51 @@ with open('gw_switch.cfg', encoding="utf8") as f: ##Создание слова�
 def to_bytes(line): ##добавляет в строку знаки переноса и возврата каретки и преобразует в байтовое значение для чтения telnetlib
     return f"{line}\r\n".encode("utf-8")
 
+def alc6224_login():
+    telnet.read_until(b'User Name', timeout=10)
+    telnet.write(b'ztbot\n')
+    telnet.read_until(b'Password', timeout=10)
+    telnet.write(b'greenpointbot\n')
+    telnet.read_until(b'#', timeout=10)
+    command_list = alc6224_cfg.split('\n')
+    for command in command_list:
+        telnet.write(to_bytes(command))
+def des3526_login():
+    telnet = telnetlib.Telnet(switch, timeout=20)
+    telnet.set_debuglevel(3)
+    telnet.read_until(b'UserName', timeout=10)
+    telnet.write(b'ztbot\n')
+    telnet.write(b'greenpointbot\n')
+    telnet.read_until(b'#', timeout=10)
+    command_list = des3526_cfg.split('\n')
+    for command in command_list:
+        telnet.write(to_bytes(command))
+
+def des3200_26_login():
+    telnet = telnetlib.Telnet(switch, timeout=20)
+    telnet.set_debuglevel(3)
+    telnet.read_until(b'UserName', timeout=10)
+    telnet.write(b'ztbot\n')
+    telnet.write(b'greenpointbot\n')
+    telnet.read_until(b'#', timeout=10)
+    command_list = des3200_26_cfg.split('\n')
+    for command in command_list:
+        telnet.write(to_bytes(command))
+
 def telnet_commands(model):
     switch_list = switch_dict.get(model)
+    global switch  ## Для использования в функциях
     for switch in switch_list:
-       # time.sleep(0.5)
         try:
+            global telnet  ## для использования в других функциях
             telnet = telnetlib.Telnet(switch, timeout=20)
             telnet.set_debuglevel(2)
-            telnet.read_until(b'User Name', timeout=10)
-            telnet.write(b'ztbot\n')
-            telnet.read_until(b'Password', timeout=10)
-            telnet.write(b'greenpointbot\n')
-            telnet.read_until(b'#', timeout=10)
-            for command in command_list:
-                telnet.write(to_bytes(command))
-            #telnet.close()
+            if model == 'OS-LS-6224':
+                alc6224_login()
+            if model == 'DES-3526':
+                des3526_login()
+            if model == 'DES-3200-26':
+                des3200_26_login()
         except socket.timeout: ##позволяет продолжить выполнение, если хост не отвечает по таймауту
             print("connection time out caught")
 
@@ -55,9 +93,7 @@ def telnet_commands(model):
 #        line = line.strip()
 #        switch_list.append(line)
 
-telnet_commands('OS-LS-6224')
-
-
+telnet_commands('DES-3200-26')
 
 
 
