@@ -93,10 +93,4 @@ def telnet_commands(model):
 #        switch_list.append(line)
 
 telnet_commands('DES-3200-26')
-
-
-
-
-
-
 print(datetime.now() - start_time)  #считает время выполнения программы
