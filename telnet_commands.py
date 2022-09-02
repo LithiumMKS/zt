@@ -9,13 +9,6 @@ url = 'http://ufa.groupw.ru/plugins/switch/config/5/switch.cfg'
 r = requests.get(url, allow_redirects=True)
 open('gw_switch.cfg', 'wb').write(r.content)  #запись в файл списка оборудования из гв
 
-
-
-
-
-
-#command_list = alc6224_cfg.split('\n') ##список команд, составленный путем разделения текста на строки
-
 switch_dict = {}
 with open('gw_switch.cfg', encoding="utf8") as f:  #Создание словаря, ключ - модель, значение - список айпишников
 	for line in f:
@@ -25,10 +18,9 @@ with open('gw_switch.cfg', encoding="utf8") as f:  #Создание слова�
 			switch_ip = line.split()[-1]
 			switch_dict.setdefault(switch_model, []).append(switch_ip)
 
-
-
 def to_bytes(line):  #добавляет в строку знаки переноса и возврата каретки и преобразует в байтовое значение для чтения telnetlib
     return f"{line}\r\n".encode("utf-8")
+
 
 def alc6224_login():
     alc6224_cfg = ''' 
@@ -43,6 +35,7 @@ def alc6224_login():
     command_list = alc6224_cfg.split('\n')
     for command in command_list:
         telnet.write(to_bytes(command))
+
 def des3526_login():
     des3526_cfg = '''
     config lldp ports 25-26 mgt_addr ipv4 {} enable
@@ -72,6 +65,7 @@ def des3200_26_login():
     command_list = des3200_26_cfg.split('\n')
     for command in command_list:
         telnet.write(to_bytes(command.format(switch)))
+
 
 def telnet_commands(model):
     switch_list = switch_dict.get(model)
