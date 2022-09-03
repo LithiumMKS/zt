@@ -1,24 +1,24 @@
 import telnetlib
-import time
 from datetime import datetime
 import socket
 import requests
 
-start_time = datetime.now()  #обозначает время начала выполнения программы
+start_time = datetime.now()  # обозначает время начала выполнения программы
 url = 'http://ufa.groupw.ru/plugins/switch/config/5/switch.cfg'
 r = requests.get(url, allow_redirects=True)
-open('gw_switch.cfg', 'wb').write(r.content)  #запись в файл списка оборудования из гв
+open('gw_switch.cfg', 'wb').write(r.content)  # запись в файл списка оборудования из гв
 
 switch_dict = {}
-with open('gw_switch.cfg', encoding="utf8") as f:  #Создание словаря, ключ - модель, значение - список айпишников
-	for line in f:
-		if 'alias' in line:
-			switch_model = line.strip()[8:]
-		elif 'address' in line:
-			switch_ip = line.split()[-1]
-			switch_dict.setdefault(switch_model, []).append(switch_ip)
+with open('gw_switch.cfg', encoding="utf8") as f:  # Создание словаря, ключ - модель, значение - список айпишников
+    for line in f:
+        if 'alias' in line:
+            switch_model = line.strip()[8:]
+        elif 'address' in line:
+            switch_ip = line.split()[-1]
+            switch_dict.setdefault(switch_model, []).append(switch_ip)
 
-def to_bytes(line):  #добавляет в строку знаки переноса и возврата каретки и преобразует в байтовое значение для чтения telnetlib
+
+def to_bytes(line):  # добавляет знаки \r \n#  и преобразует в байтовое значение для чтения telnetlib
     return f"{line}\r\n".encode("utf-8")
 
 
@@ -36,6 +36,7 @@ def alc6224_login():
     for command in command_list:
         telnet.write(to_bytes(command))
 
+
 def des3526_login():
     des3526_cfg = '''
     config lldp ports 25-26 mgt_addr ipv4 {} enable
@@ -50,6 +51,7 @@ def des3526_login():
     command_list = des3526_cfg.split('\n')
     for command in command_list:
         telnet.write(to_bytes(command.format(switch)))
+
 
 def des3200_26_login():
     des3200_26_cfg = '''
@@ -85,7 +87,7 @@ def telnet_commands(model):
             print("connection time out caught")
 
 
-#with open('switches.txt', 'r') as f: ##считывает ip из файла и заполняет ими список switch_list
+# with open('switches.txt', 'r') as f: ##считывает ip из файла и заполняет ими список switch_list
 #    switch_list = []  ##пустой список коммутаторов, который в дальнейшем будет заполняться и обрабатываться
 #    lines = f.readlines()
 #    for line in lines:
@@ -93,4 +95,4 @@ def telnet_commands(model):
 #        switch_list.append(line)
 
 telnet_commands('DES-3200-26')
-print(datetime.now() - start_time)  #считает время выполнения программы
+print(datetime.now() - start_time)  # считает время выполнения программы
