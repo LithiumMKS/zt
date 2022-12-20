@@ -66,6 +66,20 @@ def des3200_26_login():
     for command in command_list:
         telnet.write(to_bytes(command.format(switch)))
 
+def dgs3627_login():
+    dgs3627_cfg = '''
+    config ddm power_unit dbm
+    save
+    '''
+    telnet = telnetlib.Telnet(switch, timeout=20)
+    telnet.set_debuglevel(3)
+    telnet.read_until(b'UserName', timeout=10)
+    telnet.write(b'ztbot\n')
+    telnet.write(b'greenpointbot\n')
+    telnet.read_until(b'#', timeout=10)
+    command_list = dgs3627_cfg.split('\n')
+    for command in command_list:
+        telnet.write(to_bytes(command.format(switch)))
 
 def telnet_commands(model):
     switch_list = switch_dict.get(model)
@@ -81,6 +95,8 @@ def telnet_commands(model):
                 des3526_login()
             if model == 'DES-3200-26':
                 des3200_26_login()
+            if model == 'DGS-3627G':
+                dgs3627_login()
         except socket.timeout:  # позволяет продолжить выполнение, если хост не отвечает по таймауту
             print("connection time out caught")
 
@@ -92,6 +108,6 @@ def telnet_commands(model):
 #        line = line.strip()
 #        switch_list.append(line)
 
-telnet_commands('DES-3200-26')
-telnet_commands('OS-LS-6224')
+telnet_commands('DGS-3627G')
+#telnet_commands('OS-LS-6224')
 print(datetime.now() - start_time)  #считает время выполнения программы
