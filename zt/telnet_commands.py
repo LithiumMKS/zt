@@ -70,6 +70,23 @@ def des3200_26_login():
     for command in command_list:
         telnet.write(to_bytes(command.format(switch)))
 
+def des1210_28_login():
+    des1210_28_cfg = '''
+    delete snmp community ZT_rw
+    create snmp community ZT_rw view ReadWrite read_write
+    save
+    '''
+    telnet = telnetlib.Telnet(switch, timeout=20)
+    telnet.set_debuglevel(3)
+    telnet.read_until(b'UserName', timeout=10)
+    telnet.write(b'ztbot\n')
+    telnet.write(b'greenpointbot\n')
+    telnet.read_until(b'#', timeout=10)
+    command_list = des1210_28_cfg.split('\n')
+    for command in command_list:
+        telnet.write(to_bytes(command.format(switch)))
+
+
 
 def dgs3627_login():
     dgs3627_cfg = '''
@@ -106,18 +123,17 @@ def dgs3620_login():
 
 def alc6850_login():
     alc6850_cfg = '''
-interfaces transceiver ddm enable
+interfaces transceiver ddm enable 
     '''
     telnet.read_until(b'login : ', timeout=10)
     telnet.write(b'ztbot\n')
     telnet.read_until(b'password : ', timeout=10)
     telnet.write(b'greenpointbot\n')
-    telnet.read_until(b'#', timeout=10)
+    telnet.read_until(b'# ', timeout=10)
     command_list = alc6850_cfg.split('\n')
 #    for command in command_list:
 #       telnet.write(to_bytes(command))
-    telnet.write(b'interfaces transceiver ddm enable')
-    telnet.write(b'\n')
+    telnet.write(b'interfaces transceiver ddm enable\n')
 
 def telnet_commands(model):
     switch_list = switch_dict.get(model)
@@ -133,6 +149,8 @@ def telnet_commands(model):
                 des3526_login()
             if model == 'DES-3200-26':
                 des3200_26_login()
+            if model == 'DES-1210-28/ME/B2':
+                des1210_28_login()
             if model == 'DGS-3627G':
                 dgs3627_login()
             if model == 'DGS-3620-28SC':
@@ -150,6 +168,6 @@ def telnet_commands(model):
 #        line = line.strip()
 #        switch_list.append(line)
 
-telnet_commands('OS-6850-U24X')
+telnet_commands('DES-1210-28/ME/B2')
 # telnet_commands('OS-LS-6224')
 print(datetime.now() - start_time)  # считает время выполнения программы
