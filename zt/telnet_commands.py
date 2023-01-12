@@ -161,6 +161,7 @@ def telnet_commands(model):
             print("connection time out caught")
 
 
+
 # with open('switches.txt', 'r') as f: ##считывает ip из файла и заполняет ими список switch_list
 #    switch_list = []  ##пустой список коммутаторов, который в дальнейшем будет заполняться и обрабатываться
 #    lines = f.readlines()
