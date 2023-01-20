@@ -71,20 +71,26 @@ def des3200_26_login():
         telnet.write(to_bytes(command.format(switch)))
 
 def des1210_28_login():
-    des1210_28_cfg = '''
-    delete snmp community ZT_rw
-    create snmp community ZT_rw view ReadWrite read_write
-    save
-    '''
+    des1210_28_cfg = '''delete snmp group ZT_rw
+delete snmp community ZT_rw
+create snmp group ZT_rw v1 read_view ReadWrite write_view ReadWrite notify_view ReadWrite
+create snmp group ZT_rw v2c read_view ReadWrite write_view ReadWrite notify_view ReadWrite
+create snmp community ZT_rw view ReadWrite read_write
+save
+'''
     telnet = telnetlib.Telnet(switch, timeout=20)
     telnet.set_debuglevel(3)
-    telnet.read_until(b'UserName', timeout=10)
+    telnet.read_until(b'UserName:', timeout=10)
     telnet.write(b'ztbot\n')
+    telnet.read_until(b'Password:', timeout=10)
     telnet.write(b'greenpointbot\n')
+
     telnet.read_until(b'#', timeout=10)
+
     command_list = des1210_28_cfg.split('\n')
     for command in command_list:
         telnet.write(to_bytes(command.format(switch)))
+        telnet.read_until(b'#')
 
 
 
