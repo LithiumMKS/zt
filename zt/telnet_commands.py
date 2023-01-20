@@ -140,6 +140,7 @@ interfaces transceiver ddm enable
 #    for command in command_list:
 #       telnet.write(to_bytes(command))
     telnet.write(b'interfaces transceiver ddm enable\n')
+    telnet.read_until(b'# ', timeout=10)
 
 def telnet_commands(model):
     switch_list = switch_dict.get(model)
@@ -175,6 +176,6 @@ def telnet_commands(model):
 #        line = line.strip()
 #        switch_list.append(line)
 
-telnet_commands('DES-1210-28/ME/B2')
+telnet_commands('OS-6850-U24X')
 # telnet_commands('OS-LS-6224')
 print(datetime.now() - start_time)  # считает время выполнения программы
