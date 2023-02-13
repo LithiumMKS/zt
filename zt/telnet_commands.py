@@ -70,6 +70,21 @@ def des3200_26_login():
     for command in command_list:
         telnet.write(to_bytes(command.format(switch)))
 
+def des3200_52_login():
+    des3200_52_cfg = '''
+    create snmp community ZT_rw view CommunityView read_write
+    save
+    '''
+    telnet = telnetlib.Telnet(switch, timeout=20)
+    telnet.set_debuglevel(3)
+    telnet.read_until(b'UserName', timeout=10)
+    telnet.write(b'ztbot\n')
+    telnet.write(b'greenpointbot\n')
+    telnet.read_until(b'#', timeout=10)
+    command_list = des3200_52_cfg.split('\n')
+    for command in command_list:
+        telnet.write(to_bytes(command.format(switch)))
+
 def des1210_28_login():
     des1210_28_cfg = '''delete snmp group ZT_rw
 delete snmp community ZT_rw
@@ -156,6 +171,8 @@ def telnet_commands(model):
                 des3526_login()
             if model == 'DES-3200-26':
                 des3200_26_login()
+            if model == 'DES-3200-52/C1 Fast Ethernet Switch':
+                des3200_52_login()
             if model == 'DES-1210-28/ME/B2':
                 des1210_28_login()
             if model == 'DGS-3627G':
@@ -176,6 +193,6 @@ def telnet_commands(model):
 #        line = line.strip()
 #        switch_list.append(line)
 
-telnet_commands('OS-6850-U24X')
+telnet_commands('DES-3200-52/C1 Fast Ethernet Switch')
 # telnet_commands('OS-LS-6224')
 print(datetime.now() - start_time)  # считает время выполнения программы

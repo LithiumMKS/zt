@@ -51,8 +51,8 @@ sql1 = ("SELECT users.full_name, gu.gw_house_address, "
        "AND ((bl.is_deleted=0 AND ((UNIX_TIMESTAMP(CURRENT_DATE)-(bl.start_date))/2592000 < 2)) "
        "OR "
        "(bl.is_deleted=1 AND bl.account_id NOT IN "
-       "(SELECT account_id FROM blocks_info WHERE blocks_info.is_deleted=0 ))"
-       "OR bl.is_deleted is NULL) "
+       "(SELECT account_id FROM blocks_info WHERE blocks_info.is_deleted=0 )))"
+#       "OR bl.is_deleted is NULL) "
        "group BY users.basic_account ")
 
 try:
