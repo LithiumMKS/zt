@@ -86,11 +86,7 @@ def des3200_52_login():
         telnet.write(to_bytes(command.format(switch)))
 
 def des1210_28_login():
-    des1210_28_cfg = '''delete snmp group ZT_rw
-delete snmp community ZT_rw
-create snmp group ZT_rw v1 read_view ReadWrite write_view ReadWrite notify_view ReadWrite
-create snmp group ZT_rw v2c read_view ReadWrite write_view ReadWrite notify_view ReadWrite
-create snmp community ZT_rw view ReadWrite read_write
+    des1210_28_cfg = '''config ddm ports 25-28 state disable
 save
 '''
     telnet = telnetlib.Telnet(switch, timeout=20)
@@ -157,6 +153,24 @@ interfaces transceiver ddm enable
     telnet.write(b'interfaces transceiver ddm enable\n')
     telnet.read_until(b'# ', timeout=10)
 
+
+def rbcap2n_login():
+    rbcap2n_cfg = '''/interface wireless cap set caps-man-addresses=10.200.100.2
+    quit'''
+    telnet = telnetlib.Telnet(switch, timeout=20)
+    telnet.set_debuglevel(3)
+    telnet.read_until(b'Login:', timeout=10)
+    telnet.write(b'admin+ct\n')
+    telnet.read_until(b'Password:', timeout=10)
+    telnet.write(b'FreeTob2b\n')
+    telnet.read_until(b'>', timeout=10)
+    command_list = rbcap2n_cfg.split('\n')
+    for command in command_list:
+        telnet.write(to_bytes(command.format(switch)))
+        telnet.read_until(b'>', timeout=10)
+
+
+
 def telnet_commands(model):
     switch_list = switch_dict.get(model)
     global switch  # Для использования в функциях
@@ -181,6 +195,8 @@ def telnet_commands(model):
                 dgs3620_login()
             if model == 'OS-6850-U24X':
                 alc6850_login()
+            if model == 'MikroTik RBcAP2n':
+                rbcap2n_login()
         except socket.timeout:  # позволяет продолжить выполнение, если хост не отвечает по таймауту
             print("connection time out caught")
 
@@ -193,6 +209,6 @@ def telnet_commands(model):
 #        line = line.strip()
 #        switch_list.append(line)
 
-telnet_commands('DES-3200-52/C1 Fast Ethernet Switch')
+telnet_commands('MikroTik RBcAP2n')
 # telnet_commands('OS-LS-6224')
 print(datetime.now() - start_time)  # считает время выполнения программы
