@@ -20,12 +20,12 @@ def convert(input_list):
      и тд и тп
      Принимаем список, возвращаем список
     """
-    #1 Перегенерируем список в 4 столбца
+    # 1 Перегенерируем список в 4 столбца
     result = []
     for row in input_list:
-        rows2 = str(row[1] + ',' + row[2]).replace(", ",",").replace("улица,","").replace("проспект,","").replace("переулок,","").replace("бульвар,","").replace("шоссе,","").replace("проезд,","")
-        #row[1] + ',' + row[2]
-        result.append([row[0],rows2,row[3], '0.00',''])
+        rows2 = str(row[1] + ',' + row[2]).replace(", ", ",").replace("улица,", "").replace("проспект,", "").replace("переулок,", "").replace("бульвар,", "").replace("шоссе,", "").replace("проезд,", "")
+        # row[1] + ',' + row[2]
+        result.append([row[0], rows2, row[3], '0.00', ''])
 
     return result
 
@@ -70,15 +70,15 @@ MyDB1.close()
 
 date1 = datetime.date.today().strftime("-20%y-%m-%d")
 
-with open ("уралсиб{}.txt".format(date1),'w') as f:
-    writer1 = csv.writer(f)#,quoting=csv.QUOTE_NONE)
-    #writer1.writerow([u'#FILESUM 0.00']),u'#TYPE 17',u'#SERVICE 7217',u'#NOTE'])
+with open("уралсиб{}.txt".format(date1), 'w') as f:
+    writer1 = csv.writer(f)  # ,quoting=csv.QUOTE_NONE)
+    # writer1.writerow([u'#FILESUM 0.00']),u'#TYPE 17',u'#SERVICE 7217',u'#NOTE'])
     writer1.writerow([u'#FILESUM 0.00'])
     writer1.writerow([u'#TYPE 17'])
     writer1.writerow([u'#SERVICE 7217'])
     writer1.writerow([u'#NOTE'])
 
-    writer = csv.writer(f, delimiter=';')#,quoting=csv.QUOTE_NONE, escapechar=' ')
+    writer = csv.writer(f, delimiter=';')  # ,quoting=csv.QUOTE_NONE, escapechar=' ')
 
     writer.writerows(convert(result))
     writer.writerows(result)
